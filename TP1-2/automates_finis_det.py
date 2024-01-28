@@ -95,6 +95,8 @@ def make_eq_trans(eqS):
 # Determinisation d'un automate fini avec epsilon-transitions
 # -----------------------------------------------------------
 
+eq_t = make_eq_trans(eq_atom)
+
 def make_det(A):
     # A : automate fini
     # A COMPLETER
@@ -106,41 +108,62 @@ def make_det(A):
     #On récupère les états et les transitions de A + On crée de nouveaux ensembles pour notre automate déterministe
     (S, T, I, F, eqS) = A
     
-    new_T = set()
-    new_F = set()
+    new_T = []
+    new_F = []
     new_I =  eps_cl_set(eqS, I, T)
-    Q = {new_I}
+    Q = [new_I]
+    prec_Q = []
 
-    #On crée un dictionnaire d'epsilon-clôture
+    #On crée un dictionnaire qui associe, à chaque état, son epsilon-clôture
+    dico_eps_cl = dict()
 
-    dico_cl = dict()
-    for s in S:
-        dico_cl[s] = eps_cl(eqS, s, T)
-
-
-    while ???: #nb états créés != nb états explorés?
-        #cur_state
-
-        #On calcule l'epsilon-clôture de l'état courant
-        tmp_state = eps_cl(eqS, cur_state, T)
-
-        #On regarde quels sont les symboles par lesquels sont étiquettées les transitions partant des états de l'état courant
-        symboles = label_from_set(eqS, cur_state, T)
-
-        for a in symboles:
-            #Pour un symbole a, on crée un nouvel état destination de la transition état courant ->(a)
-            new_state = set()
-
-            for s in tmp_state:
-                s = dico[s]
-                tmp_trans = lt_from_s(eqS, s, T)
-                for (q1, b, q2) in tmp_state:
-                    if a == b:
-                        new_state = ajout(eqS, q2, new_state)
-            
+    
+    a_traiter = [new_I]
+    a_traiter2 = []
 
 
+    while prec_Q != Q:
+        #print(a_traiter, Q)
+        prec_Q = Q
+        for cur_state in a_traiter:
 
+            #On calcule l'epsilon-clôture de l'état courant
+            cur_state_eps_cl = eps_cl_set(eqS, cur_state, T)
+            #print(cur_state, cur_state_eps_cl)
+
+
+            #On regarde par quels symboles sont étiquettées les transitions partant de l'état courant
+            symboles = label_from_set(eqS, cur_state, T)
+            #print(symboles)
+            for a in symboles:
+                #print(a)
+                #Pour un symbole a, on crée un nouvel état destination 
+                new_state = []
+
+                for s in cur_state_eps_cl:
+                    #print("s:", s, " in ", cur_state_eps_cl)
+                    trans = lt_from_s(eqS, s, T)
+                    for (_, b, q2) in trans:
+                        if a == b:
+                            new_state = ajout(eqS, q2, new_state)
+                
+                if not is_in(eqS, new_state, a_traiter):
+                    a_traiter2 = ajout(eqS, new_state, a_traiter2)
+
+                Q = ajout(eqS, new_state, Q)
+                new_T = ajout(eq_t, (cur_state, a, new_state), new_T)
+                
+                for s in new_state:
+                    if is_in(eqS, s, F):
+                        new_F = ajout(eqS, new_state, new_F)
+
+                #print("new_state: ", new_state)
+        print("yo",Q)
+        #print("a_traiter2: ", a_traiter2)
+        a_traiter = a_traiter2   
+                
+    print("states", Q, " I:", new_I, " F:", new_F)
+    print("trans:", new_T)
     return (Q, new_T, new_I, new_F, eqS)
 
 
