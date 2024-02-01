@@ -109,8 +109,21 @@ def make_det(A):
     (S, T, I, F, eqS) = A
     
     new_T = []
-    new_F = []
+    
     new_I =  eps_cl_set(eqS, I, T)
+    
+    found = False
+    for s in new_I:
+        if is_in(eqS, s, F):
+            found = True
+            break
+    
+    if found:
+        new_F = [new_I]
+
+    else:
+        new_F = []
+    
     Q = [new_I]
     prec_Q = []
 
@@ -129,23 +142,18 @@ def make_det(A):
 
             #On calcule l'epsilon-clôture de l'état courant
             cur_state_eps_cl = eps_cl_set(eqS, cur_state, T)
-            #print(cur_state, cur_state_eps_cl)
 
 
             #On regarde par quels symboles sont étiquettées les transitions partant de l'état courant
             symboles = label_from_set(eqS, cur_state, T)
-            #print(symboles)
             for a in symboles:
-                #print(a)
-                #Pour un symbole a, on crée un nouvel état destination 
                 new_state = []
 
                 for s in cur_state_eps_cl:
-                    #print("s:", s, " in ", cur_state_eps_cl)
                     trans = lt_from_s(eqS, s, T)
                     for (_, b, q2) in trans:
                         if a == b:
-                            new_state = ajout(eqS, q2, new_state)
+                            new_state = union(eqS, new_state, eps_cl(eqS, q2,T))
                 
                 if not is_in(eqS, new_state, a_traiter):
                     a_traiter2 = ajout(eqS, new_state, a_traiter2)
@@ -156,10 +164,6 @@ def make_det(A):
                 for s in new_state:
                     if is_in(eqS, s, F):
                         new_F = ajout(eqS, new_state, new_F)
-
-                #print("new_state: ", new_state)
-        print("yo",Q)
-        #print("a_traiter2: ", a_traiter2)
         a_traiter = a_traiter2   
                 
     print("states", Q, " I:", new_I, " F:", new_F)
