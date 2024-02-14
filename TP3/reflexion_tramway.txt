@@ -1,0 +1,10 @@
+variable temporaire :
+porte_ouverte : bool;
+attente : int;
+
+fermer_porte = 1 <- 	if depart_imminent and porte_ouverte and  then
+				1
+			else
+				pre fermer_porte;
+				
+ouvrir_porte
