@@ -1,0 +1,5 @@
+node JAFTER (x: bool) returns (y: bool);
+
+let
+	y = 0 -> pre x;
+tel

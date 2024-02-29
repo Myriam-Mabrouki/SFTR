@@ -1,0 +1,45 @@
+node controleur(td, ti, cp : bool) returns (veilleuses, codes, phares : bool);
+var second_td : bool;
+var second_ti : bool;
+let 
+	second_td = 0 -> if td then
+				not pre second_td;
+			else
+				pre second_td;
+	second_ti = 0 -> if ti then
+				not pre second_ti;
+			else
+				pre second_ti;
+	
+	
+	veilleuses = 0 -> if td and second_td then
+				1
+			  else if td and not second_td then 
+			  	0
+			  else if ti and second_ti then
+			  	0
+			  else if ti and not second_ti and (pre codes or pres phares) then
+			  	1
+			  else 
+			  	pre veilleuses;
+			  
+	codes = 0 -> 	if td and second_td then 
+				1
+			else if ti and second_ti then
+				0
+			else if ti and not second_ti and pre codes then
+				0
+			else if cp and not pre veilleuses then
+				not pre codes
+			else
+				pre codes;
+				
+	phares =  0 -> 	if ti and second_ti then
+				0
+			else if ti and not second_ti and pre phares then
+				0
+			else if cp and not pre veilleuses then
+				not pre phares
+			else 
+				pre phares;
+tel
