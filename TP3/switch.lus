@@ -1,9 +1,0 @@
-node SWITCH (orig, on, off : bool) returns (state: bool);
-let 
-	state = orig -> (if on then 
-				1 
-			else if off then 
-				0 
-			else
-				pre state);
-tel

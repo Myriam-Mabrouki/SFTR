@@ -1,6 +1,0 @@
-function gett (val : int) returns(num : int);
-     
-     node c_code (a : int) returns (x : int);
-     let
-      x = gett(a);
-     tel;
